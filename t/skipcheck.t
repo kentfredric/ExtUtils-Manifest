@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib';
 use ManifestTest qw( catch_warning canon_warning spew slurp runtemp );
 use ExtUtils::Manifest qw( skipcheck );
-use Test::More tests => 34;
+use Test::More tests => 37;
 
 # Yes, most of these cases do the same thing.
 # skipcheck doesn't do anything in any of the below cases.
@@ -163,6 +163,23 @@ runtemp "skipcheck.include" => sub {
   spew( 'Makefile',        'content' );
   spew( 'mymanifest.skip', "Makefile" );
   spew( 'MANIFEST.SKIP',   "#!include mymanifest.skip" );
+
+  my (@items);
+  my ( $exit, $warn ) = catch_warning sub { @items = skipcheck };
+  cmp_ok( scalar @items, '==', 1, 'Exactly one skip result' ) or note explain \@items;
+  cmp_ok( lc $items[0], 'eq', 'makefile', "report skipping Makefile" );
+  like( canon_warning($warn), qr/^Skipping Makefile\|/i, 'Warning expected' );
+
+};
+runtemp "skipcheck.include_dir" => sub {
+  note "ensuring #include works in skipcheck with a file in a dir";
+
+  spew( 'MANIFEST', 'MANIFEST.SKIP' );
+  mkdir "mantest";
+
+  spew( 'Makefile', 'content' );
+  spew( [ 'mantest', 'mymanifest.skip' ], "Makefile" );
+  spew( 'MANIFEST.SKIP', "#!include mantest/mymanifest.skip" );
 
   my (@items);
   my ( $exit, $warn ) = catch_warning sub { @items = skipcheck };
