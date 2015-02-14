@@ -161,7 +161,7 @@ runtemp "skipcheck.include" => sub {
 
   spew( 'MANIFEST',        'MANIFEST.SKIP' );
   spew( 'Makefile',        'content' );
-  spew( 'mymanifest.skip', "Makefile\n" );
+  spew( 'mymanifest.skip', "Makefile" );
   spew( 'MANIFEST.SKIP',   "#!include mymanifest.skip" );
 
   my (@items);
