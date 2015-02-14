@@ -504,6 +504,9 @@ sub _include_mskip_file {
     push @lines, "\n#!start included $mskip\n";
     push @lines, $_ while <M>;
     close M;
+    # Ensure the last line that came from an included skip file has a trailing \n
+    # or the one after it gets join()'d onto the end of it!
+    $lines[-1] =~ s/\n?$/\n/;
     push @lines, "#!end included $mskip\n\n";
     return @lines;
 }
