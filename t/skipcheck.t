@@ -54,7 +54,7 @@ runtemp "skipcheck.extrafile" => sub {
   is( $warn, '', 'no warning' );
 };
 
-runtemp "skipcheck.emptymanifest.emptyksip" => sub {
+runtemp "skipcheck.emptymanifest.emptyskip" => sub {
   note "Skipcheck a dir with empty manifest and empty skipfile";
   spew( "MANIFEST",      "" );
   spew( "MANIFEST.SKIP", "" );
