@@ -8,31 +8,15 @@ use ExtUtils::Manifest qw( maniskip );
 
 use lib 't/tlib';
 use Test::TempDir::Tiny qw( in_tempdir );
-
-sub _spew {
-    my ( $filename, $content ) = @_;
-    open my $fh, '>', $filename or die "Can't open $filename for writing. $!";
-    print {$fh} $content or die "Error writing to $filename. $!";
-    close $fh or die "Error closing $filename. $!";
-}
-
-sub _slurp {
-    my ($filename) = @_;
-    my $content;
-    open my $fh, '<', $filename or die "Can't open $filename for reading. $!";
-    local $/ = undef;
-    $content = <$fh>;
-    close $fh or warn "Error closing $filename. $!";
-    return $content;
-}
+use ByteSlurper qw( write_bytes read_bytes );
 
 in_tempdir 'no-default-expansions' => sub {
 
-    _spew( 'MANIFEST.SKIP', qq[#!include_default] );
+    write_bytes( 'MANIFEST.SKIP', qq[#!include_default] );
 
     my $skipchk = maniskip();
 
-    my $skipcontents = _slurp('MANIFEST.SKIP');
+    my $skipcontents = read_bytes('MANIFEST.SKIP');
 
     unlike( $skipcontents, qr/#!start\s*included/, 'include_default not expanded on disk' );
 
